@@ -10,7 +10,6 @@ const login = async (req, res) => {
   if (!user) {
     throw new BadRequestError("User doesn't exit");
   }
-
   const token = user.createJWT();
 
   res.send("logged in");
@@ -23,7 +22,12 @@ const register = async (req, res) => {
   if (tempUser) {
     throw new BadRequestError("Email already exists");
   }
-  const user = await User.create({ email, name, password });
+
+  // alternative admin setup
+  // first registered user is an admin
+  const isFirstAccount = (await User.countDocuments({})) === 0;
+  const role = isFirstAccount ? "admin" : "user";
+  const user = await User.create({ email, name, password, role });
   const token = user.createJWT();
   res
     .status(StatusCodes.CREATED)
