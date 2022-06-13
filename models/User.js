@@ -36,14 +36,15 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.methods.createJWT = async function () {
+UserSchema.methods.createJWT = function () {
   const token = jwt.sign(
     { userId: this._id, name: this.name },
     process.env.JWT_SECRET,
     {
-      expiresIn: JWT_LIFETIME,
+      expiresIn: process.env.JWT_LIFETIME,
     }
   );
+  return token;
 };
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {

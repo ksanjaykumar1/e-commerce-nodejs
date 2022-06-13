@@ -14,6 +14,8 @@ const logger = Logger.getLogger("./app.js");
 const notFoundMiddlware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
+const authRouter = require("./routes/auth");
+
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
@@ -22,6 +24,8 @@ app.use(morgan("tiny"));
 app.get("/", (req, res) => {
   res.send("<h1>E-commerce app</h1>");
 });
+
+app.use("/api/v1/auth", authRouter);
 
 app.use(notFoundMiddlware);
 app.use(errorHandlerMiddleware);
