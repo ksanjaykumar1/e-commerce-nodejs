@@ -1,6 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const { BadRequestError } = require("../errors");
+const { createJWT } = require("../utils");
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -10,7 +12,8 @@ const login = async (req, res) => {
   if (!user) {
     throw new BadRequestError("User doesn't exit");
   }
-  const token = user.createJWT();
+  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const token = createJWT({ payload: tokenUser });
 
   res.send("logged in");
 };
@@ -28,7 +31,8 @@ const register = async (req, res) => {
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? "admin" : "user";
   const user = await User.create({ email, name, password, role });
-  const token = user.createJWT();
+  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const token = createJWT({ payload: tokenUser });
   res
     .status(StatusCodes.CREATED)
     .json({ token, user: { userId: user._id, name: user.name } });

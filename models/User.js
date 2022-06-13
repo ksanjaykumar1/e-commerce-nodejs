@@ -36,19 +36,20 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.methods.createJWT = function () {
-  const token = jwt.sign(
-    { userId: this._id, name: this.name },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
-  return token;
-};
+// UserSchema.methods.createJWT = function () {
+//   const token = jwt.sign(
+//     { userId: this._id, name: this.name, role: this.role },
+//     process.env.JWT_SECRET,
+//     {
+//       expiresIn: process.env.JWT_LIFETIME,
+//     }
+//   );
+//   return token;
+// };
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   const isMatch = await bcrypt.compare(this.password, candidatePassword);
+  return isMatch;
 };
 
 module.exports = mongoose.model("User", UserSchema);
