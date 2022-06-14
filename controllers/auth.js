@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const { BadRequestError } = require("../errors");
-const { createJWT } = require("../utils");
+const { createJWT, attachCookiesToResponse } = require("../utils");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -32,17 +32,19 @@ const register = async (req, res) => {
   const role = isFirstAccount ? "admin" : "user";
   const user = await User.create({ email, name, password, role });
   const tokenUser = { name: user.name, userId: user._id, role: user.role };
-  const token = createJWT({ payload: tokenUser });
+  //   const token = createJWT({ payload: tokenUser });
 
-  // create cookie
-  const oneDay = 1000 * 60 * 60 * 24;
-  res.cookie("token", token, {
-    httpOnly: true,
-    exprires: new Date(Date.now() + oneDay),
-  });
-  res
-    .status(StatusCodes.CREATED)
-    .json({ user: { userId: user._id, name: user.name } });
+  //   // create cookie
+  //   const oneDay = 1000 * 60 * 60 * 24;
+  //   res.cookie("token", token, {
+  //     httpOnly: true,
+  //     exprires: new Date(Date.now() + oneDay),
+  //   });
+  
+  attachCookiesToResponse({res,user:tokenUser})
+    res
+      .status(StatusCodes.CREATED)
+      .json({ user: { userId: user._id, name: user.name } });
 };
 
 const logout = async (req, res) => {
