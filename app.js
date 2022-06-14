@@ -8,6 +8,7 @@ const app = express();
 
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const connectDB = require("./db/connect");
 const Logger = require("./logger/logger");
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 // signing cookie by JWT SECRET
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cors());
 app.use(express.static("./public"));
 
 app.get("/", (req, res) => {
