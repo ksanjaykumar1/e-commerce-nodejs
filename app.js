@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 // signing cookie by JWT SECRET
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(express.static("./public"));
 
 app.get("/", (req, res) => {
   res.send("<h1>E-commerce app</h1>");
