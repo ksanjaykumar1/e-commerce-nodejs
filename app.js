@@ -21,17 +21,19 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(morgan("tiny"));
-app.use(cookieParser());
+// signing cookie by JWT SECRET
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.get("/", (req, res) => {
   res.send("<h1>E-commerce app</h1>");
 });
 
 app.get("/api/v1", (req, res) => {
-    logger.info(JSON.stringify(req.cookies));
-    res.send("<h1>E-commerce app</h1>");
-  });
-  
+  //   logger.info(JSON.stringify(req.cookies))
+  // accessing signed cookies
+  logger.info(JSON.stringify(req.signedCookies));
+  res.send("<h1>E-commerce app</h1>");
+});
 
 app.use("/api/v1/auth", authRouter);
 
