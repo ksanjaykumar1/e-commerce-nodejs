@@ -7,6 +7,7 @@ const app = express();
 //rest of the packages
 
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./db/connect");
 const Logger = require("./logger/logger");
@@ -20,8 +21,10 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
+  logger.info(req.cookies);
   res.send("<h1>E-commerce app</h1>");
 });
 
