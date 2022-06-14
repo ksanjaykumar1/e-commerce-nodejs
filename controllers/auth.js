@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
-const { BadRequestError } = require("../errors");
+const { BadRequestError, UnauthenticatedError } = require("../errors");
 const { createJWT, attachCookiesToResponse } = require("../utils");
 
 const login = async (req, res) => {
@@ -12,10 +12,14 @@ const login = async (req, res) => {
   if (!user) {
     throw new BadRequestError("User doesn't exit");
   }
+  const isMatch = await user.comparePassword(password);
+  console.log(isMatch);
+  if (!isMatch) {
+    throw new UnauthenticatedError("Invalid Credentials");
+  }
   const tokenUser = { name: user.name, userId: user._id, role: user.role };
-  const token = createJWT({ payload: tokenUser });
-
-  res.send("logged in");
+  attachCookiesToResponse({ res, user: tokenUser });
+  res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
 const register = async (req, res) => {
@@ -40,15 +44,19 @@ const register = async (req, res) => {
   //     httpOnly: true,
   //     exprires: new Date(Date.now() + oneDay),
   //   });
-  
-  attachCookiesToResponse({res,user:tokenUser})
-    res
-      .status(StatusCodes.CREATED)
-      .json({ user: { userId: user._id, name: user.name } });
+
+  attachCookiesToResponse({ res, user: tokenUser });
+  res
+    .status(StatusCodes.CREATED)
+    .json({ user: { userId: user._id, name: user.name } });
 };
 
 const logout = async (req, res) => {
-  res.send("Logged out");
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now() + 5 * 1000),
+  });
+  res.status(StatusCodes.OK).json({msg:"user has logged out"})
 };
 
 module.exports = {
