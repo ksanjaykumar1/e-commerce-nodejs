@@ -24,9 +24,14 @@ app.use(morgan("tiny"));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  logger.info(req.cookies);
   res.send("<h1>E-commerce app</h1>");
 });
+
+app.get("/api/v1", (req, res) => {
+    logger.info(JSON.stringify(req.cookies));
+    res.send("<h1>E-commerce app</h1>");
+  });
+  
 
 app.use("/api/v1/auth", authRouter);
 
