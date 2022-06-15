@@ -1,7 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const CustomError = require("../errors");
-
+const Logger = require("../logger/logger");
+const logger = Logger.getLogger("./contollers/userController");
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: "user" }).select("-password");
@@ -18,7 +19,7 @@ const getUser = async (req, res) => {
 };
 
 const showCurrentUser = async (req, res) => {
-  res.send("send current user route");
+  res.status(StatusCodes.OK).json({ user:req.user});
 };
 
 const updateUser = async (req, res) => {
