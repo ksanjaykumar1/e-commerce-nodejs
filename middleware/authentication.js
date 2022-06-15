@@ -17,11 +17,20 @@ const authenticateUser = async (req, res, next) => {
   next();
 };
 
-const authorizePermissions = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    throw new CustomError.UnauthorizedError('Only admin is authorized to access')
-  }
-  next();
+// const authorizePermissions = (req, res, next) => {
+//   if (req.user.role !== "admin") {
+//     throw new CustomError.UnauthorizedError('Only admin is authorized to access')
+//   }
+//   next();
+// };
+const authorizePermissions = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      throw new CustomError.UnauthorizedError("authorized to access");
+    }
+    logger.info(req.user.role);
+    next();
+  };
 };
 
 module.exports = {
