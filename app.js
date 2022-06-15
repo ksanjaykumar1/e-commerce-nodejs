@@ -17,6 +17,7 @@ const notFoundMiddlware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
 const authRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
 
 const port = process.env.PORT || 5000;
 
@@ -39,6 +40,7 @@ app.get("/api/v1", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 
 app.use(notFoundMiddlware);
 app.use(errorHandlerMiddleware);
