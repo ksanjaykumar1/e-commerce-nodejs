@@ -1,7 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const { BadRequestError, UnauthenticatedError } = require("../errors");
-const { createJWT, attachCookiesToResponse } = require("../utils");
+const {
+  createJWT,
+  attachCookiesToResponse,
+  createTokenUser,
+} = require("../utils");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -17,7 +21,8 @@ const login = async (req, res) => {
   if (!isMatch) {
     throw new UnauthenticatedError("Invalid Credentials");
   }
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  // const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const tokenUser = createTokenUser(user);
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
@@ -35,7 +40,7 @@ const register = async (req, res) => {
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? "admin" : "user";
   const user = await User.create({ email, name, password, role });
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  // const tokenUser = { name: user.name, userId: user._id, role: user.role };
   //   const token = createJWT({ payload: tokenUser });
 
   //   // create cookie
@@ -45,6 +50,7 @@ const register = async (req, res) => {
   //     exprires: new Date(Date.now() + oneDay),
   //   });
 
+  const tokenUser = createTokenUser(user);
   attachCookiesToResponse({ res, user: tokenUser });
   res
     .status(StatusCodes.CREATED)
@@ -56,7 +62,7 @@ const logout = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + 5 * 1000),
   });
-  res.status(StatusCodes.OK).json({msg:"user has logged out"})
+  res.status(StatusCodes.OK).json({ msg: "user has logged out" });
 };
 
 module.exports = {
