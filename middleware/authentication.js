@@ -33,7 +33,15 @@ const authorizePermissions = (...roles) => {
   };
 };
 
+const checkPermissions = (req,res,next) => {
+  if (req.params.id !== req.user.userId) {
+    throw new CustomError.UnauthorizedError(`User doesn't have permission`);
+  }
+  next();
+};
+
 module.exports = {
   authenticateUser,
   authorizePermissions,
+  checkPermissions
 };
